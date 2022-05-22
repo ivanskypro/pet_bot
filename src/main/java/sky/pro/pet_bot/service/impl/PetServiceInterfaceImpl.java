@@ -1,4 +1,6 @@
 package sky.pro.pet_bot.service.impl;
 
-public class PetServiceInterfaceImpl {
+import sky.pro.pet_bot.service.PetServiceInterface;
+
+public class PetServiceInterfaceImpl implements PetServiceInterface {
 }

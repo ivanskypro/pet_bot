@@ -1,4 +1,6 @@
 package sky.pro.pet_bot.service.impl;
 
-public class VolunteerServiceInterfaceImpl {
+import sky.pro.pet_bot.service.VolunteerServiceInterface;
+
+public class VolunteerServiceInterfaceImpl implements VolunteerServiceInterface {
 }

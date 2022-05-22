@@ -4,24 +4,23 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "statusReports")
-public class StatusReport {
+@Table(name = "reports")
+public class Report {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String reportText;
     private Long chatId;
 
-    public StatusReport(Integer id, String reportText, Long chatId) {
+    public Report(Integer id, String reportText, Long chatId) {
         this.id = id;
         this.reportText = reportText;
         this.chatId = chatId;
     }
 
-    public StatusReport() {
-
+    public Report() {
     }
 
     public Integer getId() {
@@ -52,7 +51,7 @@ public class StatusReport {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StatusReport that = (StatusReport) o;
+        Report that = (Report) o;
         return Objects.equals(id, that.id) && Objects.equals(reportText, that.reportText) && Objects.equals(chatId, that.chatId);
     }
 

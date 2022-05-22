@@ -2,29 +2,29 @@
 
 -- changeSet ikalmykov:1
     CREATE TABLE users (
-    id SERIAL,
-    chatId SERIAL,
+    id SERIAL primary key,
+    chat_id INTEGER,
     name TEXT,
-    phoneNumber SERIAL,
-    location TEXT
-    )
+    phone_number INTEGER,
+    location TEXT)
+
 -- changeSet ikalmykov:2
     CREATE TABLE pets(
-    id SERIAL,
-    petName TEXT,
-    age SERIAL
+    id SERIAL primary key,
+    pet_name TEXT,
+    age INTEGER
 )
 -- changeSet ikalmykov:3
     CREATE TABLE volunteers(
-    id SERIAL,
-    volunteerName TEXT,
-    phoneNumber SERIAL
+    id SERIAL primary key,
+    volunteer_name TEXT,
+    phone_number INTEGER
 )
 
 -- changeSet ikalmykov:4
-    CREATE TABLE statusReports(
-    id SERIAL,
-    chatId SERIAL,
-    reportText TEXT,
-    phoneNumber SERIAL
+    CREATE TABLE reports(
+    id SERIAL primary key,
+    chat_id INTEGER,
+    report_text TEXT,
+    phone_number INTEGER
 )
