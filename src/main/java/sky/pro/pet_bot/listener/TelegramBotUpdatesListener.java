@@ -2,13 +2,10 @@ package sky.pro.pet_bot.listener;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ForceReply;
-import com.pengrad.telegrambot.model.request.ParseMode;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.SendResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +22,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private static final String START_CMD = "/start";
+    private static final String GREETINGS_MESSAGE = "Welcome to Pet Finder!\nChoose one of the items on this menu:";
     private final TelegramBot telegramBot;
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot) {
@@ -45,12 +43,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message message = update.message();
             Long chatId = message.chat().id();
             if (update.message() != null && update.message().text().equals(START_CMD)){
-                List<BotCommand> commandList = new ArrayList<>();
-                commandList.add(new BotCommand("Information","Узнать информацию о приюте"));
-                commandList.add(new BotCommand("How take pet","Как взять собаку из приюта"));
-                commandList.add(new BotCommand("Send report about pet","Прислать отчет о питомце"));
-                commandList.add(new BotCommand("Call a volunteer","Позвать волонтера"));
-                //this.execute(new SetMyCommands((BotCommand) commandList));
+                sendMenu(chatId);
             } else {
                 try{
 
@@ -63,9 +56,27 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    private void sendMessage(long chatId, List<BotCommand> commands){
-        logger.info("Method sendMessage has been run: {}, {}", chatId, commands);
-        SendMessage request = new SendMessage(chatId, "")
+    private void sendMenu(long chatId){
+        logger.info("Method sendMessage has been run: {}, {}", chatId, TelegramBotUpdatesListener.GREETINGS_MESSAGE);
+
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
+                new InlineKeyboardButton[][]{
+                        new InlineKeyboardButton[]{
+                                new InlineKeyboardButton("Узнать информацию о приюте").callbackData("1")
+                        },
+                        new InlineKeyboardButton[]{
+                                new InlineKeyboardButton("Как взять собаку из приюта").callbackData("2")
+                        },
+                        new InlineKeyboardButton[]{
+                                new InlineKeyboardButton("Прислать отчет о питомце").callbackData("3")
+                        },
+                        new InlineKeyboardButton[]{
+                                new InlineKeyboardButton("Позвать волонтера").callbackData("4")
+                        }
+                });
+
+        SendMessage request = new SendMessage(chatId, TelegramBotUpdatesListener.GREETINGS_MESSAGE)
+                .replyMarkup(inlineKeyboard)
                 .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true);
 
