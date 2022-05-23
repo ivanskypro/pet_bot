@@ -28,6 +28,13 @@ public class User {
         this.location = location;
     }
 
+    public boolean isById(Integer id) {
+        if (this.id != id) {
+            return false;
+        }
+        return true;
+    }
+
     public Integer getId() {
         return id;
     }
