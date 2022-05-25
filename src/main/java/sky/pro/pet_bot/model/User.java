@@ -3,6 +3,10 @@ package sky.pro.pet_bot.model;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**Класс, описывающий пользователя, взаимодействующего с ботом
+ *
+ */
+
 @Entity
 @Table (name= "users")
 public class User {

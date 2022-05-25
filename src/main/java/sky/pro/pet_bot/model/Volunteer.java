@@ -2,7 +2,9 @@ package sky.pro.pet_bot.model;
 
 import javax.persistence.*;
 import java.util.Objects;
-
+/**Класс, описывающий волонтера, взаимодействующего с ботом
+ *
+ */
 @Entity
 @Table(name = "volunteers")
 public class Volunteer {
