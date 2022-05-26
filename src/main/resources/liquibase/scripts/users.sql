@@ -28,3 +28,9 @@
     report_text TEXT,
     phone_number INTEGER
 )
+
+-- changeSet ikalmykov:5
+    CREATE TABLE answers (
+    id Serial primary key,
+    text_message TEXT
+)
