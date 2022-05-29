@@ -1,7 +1,15 @@
 package sky.pro.pet_bot.service;
 
-/**
- * нтерфейс, содержащий методы для работы с волонтерами приюта
- */
+
+import sky.pro.pet_bot.model.Volunteer;
+
+import java.util.Collection;
+
 public interface VolunteerServiceInterface {
+
+    Volunteer addUserPet(Volunteer volunteer);
+
+    Collection<Volunteer> getVolunteerById(Integer id);
+
+    Collection<Volunteer> getAllVolunteers();
 }

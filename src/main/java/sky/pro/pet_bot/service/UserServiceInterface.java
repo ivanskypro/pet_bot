@@ -1,7 +1,11 @@
 package sky.pro.pet_bot.service;
 
-/**
- * нтерфейс, содержащий методы для работы с пользователями бота
- */
+import sky.pro.pet_bot.model.User;
+
+import java.util.Collection;
+
 public interface UserServiceInterface {
+    User addUser(User user, Long chatId);
+    Collection<User> getUserById(Integer id);
+    Collection<User> getAllUsers();
 }
