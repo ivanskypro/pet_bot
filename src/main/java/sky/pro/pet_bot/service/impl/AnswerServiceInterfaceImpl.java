@@ -1,17 +1,51 @@
 package sky.pro.pet_bot.service.impl;
 
-import com.pengrad.telegrambot.model.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import sky.pro.pet_bot.dao.AnswerRepository;
 import sky.pro.pet_bot.model.Answer;
 import sky.pro.pet_bot.service.AnswerServiceInterface;
 
-/**
- * Реализация интерфейса для работы с общими ответами пользователю
- */
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+
 @Service
 public class AnswerServiceInterfaceImpl implements AnswerServiceInterface {
+
+    private final AnswerRepository answerRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceInterfaceImpl.class);
+
+    public AnswerServiceInterfaceImpl(AnswerRepository answerRepository) {
+        this.answerRepository = answerRepository;
+    }
+
     @Override
-    public Answer getMappingAnswer(Message message) {
-        return null;
+    public Answer addAnswer(Answer answer) {
+        logger.info("Method addAnswer starts");
+        return answerRepository.save(answer);
+    }
+
+    @Override
+    public Collection<Answer> getAnswersById(Long id) {
+        logger.info("Method getAnswerById starts");
+        return getAllAnswers().stream()
+                .filter(pet -> pet.isById(id))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Answer> getAllAnswers() {
+        return answerRepository.findAll();
+    }
+
+    public Answer update(Answer answer) {
+        return answerRepository.save(answer);
+    }
+
+    public void deleteAnswer(Long id) {
+        answerRepository.deleteById(id);
     }
 }
