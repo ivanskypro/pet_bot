@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sky.pro.pet_bot.dao.PictureRepository;
+import sky.pro.pet_bot.model.Answer;
 import sky.pro.pet_bot.model.Pet;
 import sky.pro.pet_bot.model.Picture;
 import sky.pro.pet_bot.service.PictureServiceInterface;
@@ -23,10 +24,12 @@ public class PictureServiceInterfaceImpl implements PictureServiceInterface {
     private String picturesDir;
 
     private final PetServiceInterfaceImpl petServiceInterface;
+    private final AnswerServiceInterfaceImpl answerServiceInterface;
     private final PictureRepository pictureRepository;
 
-    public PictureServiceInterfaceImpl(PetServiceInterfaceImpl petServiceInterface, PictureRepository pictureRepository) {
+    public PictureServiceInterfaceImpl(PetServiceInterfaceImpl petServiceInterface, AnswerServiceInterfaceImpl answerServiceInterface, PictureRepository pictureRepository) {
         this.petServiceInterface = petServiceInterface;
+        this.answerServiceInterface = answerServiceInterface;
         this.pictureRepository = pictureRepository;
     }
 
@@ -46,6 +49,28 @@ public class PictureServiceInterfaceImpl implements PictureServiceInterface {
         }
         Picture picture = findPicture(petId);
         picture.setPet(pet);
+        picture.setFilePath(filePatch.toString());
+        picture.setFileSize(picFile.getSize());
+        picture.setMediaType(picFile.getContentType());
+        pictureRepository.save(picture);
+    }
+
+    public void uploadAnswerPic (Long answerId, MultipartFile picFile) throws IOException {
+        Answer answer = answerServiceInterface.getAnswerById(answerId);
+
+        Path filePatch = Path.of(picturesDir, answer + "." + getExtensions (picFile.getOriginalFilename()));
+        Files.createDirectories(filePatch.getParent());
+        Files.deleteIfExists(filePatch);
+        try (
+                InputStream is = picFile.getInputStream();
+                OutputStream os = Files.newOutputStream(filePatch, CREATE_NEW);
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
+        ) {
+            bis.transferTo(bos);
+        }
+        Picture picture = findPicture(answerId);
+        picture.setAnswer(answer);
         picture.setFilePath(filePatch.toString());
         picture.setFileSize(picFile.getSize());
         picture.setMediaType(picFile.getContentType());

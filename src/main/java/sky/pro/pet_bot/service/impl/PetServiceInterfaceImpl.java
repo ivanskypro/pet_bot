@@ -30,7 +30,7 @@ public class PetServiceInterfaceImpl implements PetServiceInterface {
 
     @Override
     public Pet getPetById(Long id) {
-        logger.info("Method getPetById is start");
+        logger.info("Method getPetById is started");
         return petRepository.findById(id).get();
     }
 

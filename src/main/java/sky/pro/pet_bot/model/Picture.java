@@ -16,7 +16,10 @@ public class Picture {
     @OneToOne
     private Pet pet;
 
-       public Long getId() {
+    @OneToOne
+    private Answer answer;
+
+    public Long getId() {
         return id;
     }
 
@@ -55,4 +58,14 @@ public class Picture {
     public void setPet(Pet pet) {
         this.pet = pet;
     }
+
+    public Answer getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(Answer answer) {
+        this.answer = answer;
+    }
+
+
 }

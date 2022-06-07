@@ -29,11 +29,9 @@ public class AnswerServiceInterfaceImpl implements AnswerServiceInterface {
     }
 
     @Override
-    public Collection<Answer> getAnswersById(Long id) {
-        logger.info("Method getAnswerById starts");
-        return getAllAnswers().stream()
-                .filter(pet -> pet.isById(id))
-                .collect(Collectors.toList());
+    public Answer getAnswerById(Long id) {
+        logger.info("Method getAnswerById is started");
+        return answerRepository.findById(id).get();
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.Collection;
 public interface AnswerServiceInterface {
    Answer addAnswer(Answer answer);
 
-    Collection<Answer> getAnswersById(Long id);
+    Answer getAnswerById(Long id);
 
     Collection<Answer> getAllAnswers();
 

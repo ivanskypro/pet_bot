@@ -44,7 +44,8 @@
         file_path TEXT,
         file_size BIGINT,
         media_type TEXT,
-        pet_id INTEGER REFERENCES pets(id)
+        pet_id INTEGER REFERENCES pets(id),
+        answer_id INTEGER REFERENCES answers(id)
     )
 
 
