@@ -47,7 +47,7 @@ public class PictureServiceInterfaceImpl implements PictureServiceInterface {
         ) {
             bis.transferTo(bos);
         }
-        Picture picture = findPicture(petId);
+        Picture picture = findPictureByPetId(petId);
         picture.setPet(pet);
         picture.setFilePath(filePatch.toString());
         picture.setFileSize(picFile.getSize());
@@ -69,7 +69,7 @@ public class PictureServiceInterfaceImpl implements PictureServiceInterface {
         ) {
             bis.transferTo(bos);
         }
-        Picture picture = findPicture(answerId);
+        Picture picture = findPictureByAnswerId(answerId);
         picture.setAnswer(answer);
         picture.setFilePath(filePatch.toString());
         picture.setFileSize(picFile.getSize());
@@ -80,7 +80,11 @@ public class PictureServiceInterfaceImpl implements PictureServiceInterface {
     private String getExtensions(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);}
 
-    public Picture findPicture(Long petId) {
-        return pictureRepository.findById(petId).orElse(new Picture());
+    public Picture findPictureByPetId(Long petId) {
+        return pictureRepository.findByPetId(petId).orElse(new Picture());
+    }
+
+    public Picture findPictureByAnswerId (Long answerId) {
+        return pictureRepository.findByAnswerId(answerId).orElse(new Picture());
     }
 }

@@ -47,7 +47,7 @@ private final PictureServiceInterfaceImpl pictureServiceInterfaceImpl;
 
     @GetMapping(value = "/{id}/picture-from-file")
     public void downloadPic(@PathVariable Long id, HttpServletResponse response) throws IOException {
-        Picture picture = pictureServiceInterfaceImpl.findPicture(id);
+        Picture picture = pictureServiceInterfaceImpl.findPictureByPetId(id);
         Path path = Path.of(picture.getFilePath());
         try (InputStream is = Files.newInputStream(path);
              OutputStream os = response.getOutputStream();) {
