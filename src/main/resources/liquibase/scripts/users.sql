@@ -4,8 +4,8 @@
     CREATE TABLE users (
     id SERIAL NOT NULL primary key,
     chat_id INTEGER NOT NULL ,
-    name TEXT NOT NULL,
-    phone_number INTEGER,
+    name TEXT,
+    phone_number BIGINT,
     location TEXT)
 
 -- changeSet ikalmykov:2
@@ -46,6 +46,7 @@
         media_type TEXT,
         pet_id INTEGER REFERENCES pets(id),
         answer_id INTEGER REFERENCES answers(id)
+
     )
 
 
