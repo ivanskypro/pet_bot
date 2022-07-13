@@ -15,11 +15,13 @@ public class Volunteer {
 
     private String name;
     private String phoneNumber;
+    private Long chatId;
 
-    public Volunteer(Long id, String name, String phoneNumber) {
+    public Volunteer(Long id, String name, String phoneNumber, Long chatId) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.chatId = chatId;
     }
 
     public Volunteer() {
@@ -56,17 +58,25 @@ public class Volunteer {
         this.phoneNumber = phoneNumber;
     }
 
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Volunteer volunteer = (Volunteer) o;
-        return Objects.equals(id, volunteer.id) && Objects.equals(name, volunteer.name) && Objects.equals(phoneNumber, volunteer.phoneNumber);
+        return Objects.equals(id, volunteer.id) && Objects.equals(name, volunteer.name) && Objects.equals(phoneNumber, volunteer.phoneNumber) && Objects.equals(chatId, volunteer.chatId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, phoneNumber);
+        return Objects.hash(id, name, phoneNumber, chatId);
     }
 
     @Override
@@ -75,6 +85,7 @@ public class Volunteer {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", chatId=" + chatId +
                 '}';
     }
 }

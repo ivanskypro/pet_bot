@@ -2,22 +2,26 @@ package sky.pro.pet_bot.listener;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sky.pro.pet_bot.dao.AnswerRepository;
 import sky.pro.pet_bot.dao.UserRepository;
 import sky.pro.pet_bot.dao.VolunteerRepository;
 import sky.pro.pet_bot.model.User;
+import sky.pro.pet_bot.model.Volunteer;
 import sky.pro.pet_bot.service.impl.AnswerServiceInterfaceImpl;
 import sky.pro.pet_bot.service.impl.PictureServiceInterfaceImpl;
 import sky.pro.pet_bot.service.impl.VolunteerServiceInterfaceImpl;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @Service
@@ -91,14 +95,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                                     .replyMarkup(keyboard);
                             telegramBot.execute(request);
                         }
-                        if (update.message().text().equals("Перезвоните мне")){
-                            SendMessage message = new SendMessage(chatId, "Напишите, пожалуйста, свой номер телефона и мы Вам перезвоним");
-                            telegramBot.execute(message);
-                        }
-
                         if (update.message().text().equals("Соединить с волонтером")) {
-
-                            SendMessage request = new SendMessage(chatId, volunteerRepository.getById(1L).getPhoneNumber());
+                            SendMessage request = new SendMessage(chatId, "Напишите свой номер телефона и мы с вами свяжемся");
                             telegramBot.execute(request);
                         }
 
@@ -117,15 +115,45 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
 
                         if (update.message().text().matches("[0-9]+")){
-                                User user = new User();
-                                Long phoneNumber = Long.valueOf(update.message().text());
-                                user.setPhoneNumber(phoneNumber);
-                                user.setChatId(chatId);
-                                userRepository.save(user);
+                            Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
+                            SendMessage request = new SendMessage(chatId, "Хорошо, Волонтер с Вами обязательно свяжется").replyMarkup(keyboard);
+                            telegramBot.execute(request);
+
+                            User user = new User();
+                            user.setChatId(chatId);
+                            user.setName(update.message().chat().firstName());
+                            user.setPhoneNumber(update.message().text());
+                            user.setOwner(false);
+                            userRepository.save(user);
+
+                            Long volunteerChatId = volunteerRepository.findById(1L).get().getChatId();
+
+                            SendMessage messageToVolunteer = new SendMessage( volunteerChatId, "Привет, пользователь "+ update.message().chat().firstName() +
+                                    " " + " просил позвонить по этому номеру:"+ update.message().text()+
+                                    " chatId: " + update.message().chat().id());
+                            telegramBot.execute(messageToVolunteer);
                             }
 
+                        if (update.message().text().equals("wbv2022")){
+                            Volunteer volunteer = new Volunteer();
+                            volunteer.setChatId(update.message().chat().id());
+                            volunteer.setName(update.message().chat().firstName());
+                            volunteerRepository.save(volunteer);
+                            Keyboard keyboard = keyboardCreator("Подтвердить испытательный срок",
+                                    "Изменить испытательный срок",
+                                    "Создать пользователя");
 
-                    } catch (NullPointerException ignored) {
+                            SendMessage request = new SendMessage(chatId, "Поздравляю, теперь ты Волонтер!").replyMarkup(keyboard);
+                            telegramBot.execute(request);
+                        }
+                        if (doesVolunteerExist(chatId) && update.message().text().equals(START_CMD)){
+                            Keyboard keyboard = keyboardCreator("Подтвердить испытательный срок",
+                                                                        "Изменить испытательный срок");
+
+                            SendMessage message = new SendMessage(chatId, "Привет, волонтер!").replyMarkup(keyboard);
+                            telegramBot.execute(message);
+                        }
+                    } catch (NullPointerException | NoSuchElementException ignored) {
                     }
                 }
         );
@@ -138,9 +166,17 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             keyboard.addRow(buttons[i]);
         }
         return keyboard.oneTimeKeyboard(true);
-
-
     }
+
+    public boolean doesVolunteerExist(Long chatId){
+        Volunteer volunteer = volunteerRepository.findByChatId(chatId);
+        Long volunteerId = volunteer.getChatId();
+        return volunteerId.equals(chatId);
+    }
+
+
+
+
 
 
 }

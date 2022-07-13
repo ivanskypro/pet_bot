@@ -5,8 +5,9 @@
     id SERIAL NOT NULL primary key,
     chat_id INTEGER NOT NULL ,
     name TEXT,
-    phone_number BIGINT,
-    location TEXT)
+    phone_number TEXT,
+    is_owner BOOLEAN DEFAULT FALSE)
+
 
 -- changeSet ikalmykov:2
     CREATE TABLE pets(
@@ -20,8 +21,9 @@
 -- changeSet ikalmykov:3
     CREATE TABLE volunteers(
     id SERIAL NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL ,
-    phone_number TEXT NOT NULL
+    name TEXT NOT NULL,
+    chat_id BIGINT,
+    phone_number TEXT
 )
 
 -- changeSet ikalmykov:4

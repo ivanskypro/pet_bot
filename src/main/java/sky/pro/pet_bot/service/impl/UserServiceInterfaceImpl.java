@@ -9,7 +9,6 @@ import sky.pro.pet_bot.model.User;
 import sky.pro.pet_bot.service.UserServiceInterface;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceInterfaceImpl implements UserServiceInterface {
@@ -25,19 +24,16 @@ public class UserServiceInterfaceImpl implements UserServiceInterface {
     }
 
     @Override
-    public User addUser(User user, Long chatId) {
-        user.setChatId(chatId);
+    public User addUser(User user) {
         User storedUser = userRepository.save(user);
         logger.info("User successfully saved " + storedUser);
         return storedUser;
     }
 
     @Override
-    public Collection<User> getUserById(Integer id) {
-        logger.info("Method getUserById is start");
-        return getAllUsers().stream()
-                .filter(user -> user.isById(id))
-                .collect(Collectors.toList());
+    public User getUserById(Long id) {
+        logger.info("Method getUserById is started");
+        return userRepository.findById(id).get();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package sky.pro.pet_bot.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
@@ -14,47 +16,38 @@ public class User {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private Long phoneNumber;
+    private String phoneNumber;
     private String name;
     private Long chatId;
-    private String location;
-
-
+    private boolean isOwner;
 
 
     public User() {
     }
 
-    public User(Integer id, Long phoneNumber, String name, Long chatId, String location) {
+    public User(Long id, String phoneNumber, String name, Long chatId, boolean isOwner) {
         this.id = id;
         this.phoneNumber = phoneNumber;
         this.name = name;
         this.chatId = chatId;
-        this.location = location;
+        this.isOwner = isOwner;
     }
 
-    public boolean isById(Integer id) {
-        if (this.id != id) {
-            return false;
-        }
-        return true;
-    }
-
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -74,12 +67,8 @@ public class User {
         this.chatId = chatId;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
+    public boolean isOwner() {
+        return isOwner;
     }
 
     @Override
@@ -87,12 +76,16 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(name, user.name) && Objects.equals(chatId, user.chatId) && Objects.equals(location, user.location);
+        return isOwner == user.isOwner && Objects.equals(id, user.id) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(name, user.name) && Objects.equals(chatId, user.chatId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phoneNumber, name, chatId, location);
+        return Objects.hash(id, phoneNumber, name, chatId, isOwner);
+    }
+
+    public void setOwner(boolean owner) {
+        isOwner = owner;
     }
 
     @Override
@@ -102,7 +95,8 @@ public class User {
                 ", phoneNumber=" + phoneNumber +
                 ", name='" + name + '\'' +
                 ", chatId=" + chatId +
-                ", location='" + location + '\'' +
+                ", isOwner=" + isOwner +
                 '}';
     }
 }
+

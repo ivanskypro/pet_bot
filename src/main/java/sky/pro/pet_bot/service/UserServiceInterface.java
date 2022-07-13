@@ -5,7 +5,10 @@ import sky.pro.pet_bot.model.User;
 import java.util.Collection;
 
 public interface UserServiceInterface {
-    User addUser(User user, Long chatId);
-    Collection<User> getUserById(Integer id);
+
+    User addUser(User user);
+
+    User getUserById(Long id);
+
     Collection<User> getAllUsers();
 }

@@ -7,4 +7,5 @@ import sky.pro.pet_bot.model.User;
  * репозиторий для хранения сведений о пользователе
  */
 public interface UserRepository extends JpaRepository<User,Long> {
+
 }

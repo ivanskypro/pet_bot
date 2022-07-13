@@ -8,4 +8,6 @@ import sky.pro.pet_bot.model.Volunteer;
  */
 
 public interface VolunteerRepository extends JpaRepository<Volunteer,Long> {
+
+    Volunteer findByChatId (Long chatId);
 }
