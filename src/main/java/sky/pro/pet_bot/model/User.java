@@ -23,7 +23,6 @@ public class User {
     private Long chatId;
     private boolean isOwner;
 
-
     public User() {
     }
 

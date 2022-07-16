@@ -6,13 +6,16 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendPhoto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sky.pro.pet_bot.dao.AnswerRepository;
+import sky.pro.pet_bot.dao.ReportRepository;
 import sky.pro.pet_bot.dao.UserRepository;
 import sky.pro.pet_bot.dao.VolunteerRepository;
+import sky.pro.pet_bot.model.Report;
 import sky.pro.pet_bot.model.User;
 import sky.pro.pet_bot.model.Volunteer;
 import sky.pro.pet_bot.service.impl.AnswerServiceInterfaceImpl;
@@ -20,6 +23,8 @@ import sky.pro.pet_bot.service.impl.PictureServiceInterfaceImpl;
 import sky.pro.pet_bot.service.impl.VolunteerServiceInterfaceImpl;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -34,7 +39,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$";
     private final TelegramBot telegramBot;
 
-    public TelegramBotUpdatesListener(TelegramBot telegramBot, AnswerServiceInterfaceImpl answerServiceInterface, AnswerRepository answerRepository, PictureServiceInterfaceImpl pictureServiceInterface, UserRepository userRepository, VolunteerServiceInterfaceImpl volunteerServiceInterface, VolunteerRepository volunteerRepository) {
+    public TelegramBotUpdatesListener(TelegramBot telegramBot, AnswerServiceInterfaceImpl answerServiceInterface, AnswerRepository answerRepository, PictureServiceInterfaceImpl pictureServiceInterface, UserRepository userRepository, VolunteerServiceInterfaceImpl volunteerServiceInterface, VolunteerRepository volunteerRepository, ReportRepository reportRepository) {
         this.telegramBot = telegramBot;
         this.answerServiceInterface = answerServiceInterface;
         this.answerRepository = answerRepository;
@@ -42,6 +47,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         this.userRepository = userRepository;
         this.volunteerServiceInterface = volunteerServiceInterface;
         this.volunteerRepository = volunteerRepository;
+        this.reportRepository = reportRepository;
     }
 
     private final AnswerServiceInterfaceImpl answerServiceInterface;
@@ -50,6 +56,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final UserRepository userRepository;
     private final VolunteerServiceInterfaceImpl volunteerServiceInterface;
     private final VolunteerRepository volunteerRepository;
+    private final ReportRepository reportRepository;
+
+    Message message;
 
     @PostConstruct
     public void init() {
@@ -60,22 +69,43 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
-                    logger.info("Processing update: {}", update);
-                    try {
-                        Long chatId = update.message().chat().id();
-                        if (update.message().text().equals(START_CMD)) {
-                           Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
+            logger.info("Processing update: {}", update);
+            try {
+                Long chatId = update.message().chat().id();
+
+                if ( update.message().photo() != null){
+                    logger.info("Сохраняю отчет");
+                    Report report = new Report();
+                    LocalDateTime dateTimeOfReportUpload = LocalDateTime.of(2022,12,31,12,24);
+                    report.setDateTimeOfReport(dateTimeOfReportUpload);
+                    String caption = update.message().caption();
+                    report.setText(caption);
+                    String fileId = update.message().photo()[2].fileId();
+                    report.setFileId(fileId);
+                    Integer fileSize = update.message().photo()[2].fileSize();
+                    report.setFileSize(fileSize);
+                    reportRepository.save(report);
+
+                    SendMessage message = new SendMessage(update.message().chat().id(), "Отчет сохранен");
+                    telegramBot.execute(message);
+
+                    telegramBot.execute(new SendPhoto(volunteerRepository.findById(1L).get().getChatId(), report.getFileId()));
+                    telegramBot.execute(new SendMessage(volunteerRepository.findById(1L).get().getChatId(), "Владелец "+ update.message().chat().firstName() + " прислал отчёт с сообщением: " + report.getText()));
+
+                }
+                 if (update.message().text().equals(START_CMD)) {
+                            Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                             SendMessage request = new SendMessage(chatId, "Привет! Выбери один из приютов для получения info")
                                     .replyMarkup(keyboard);
                             telegramBot.execute(request);
                         }
-                        if (update.message().text().equals("Назад")) {
+                 if (update.message().text().equals("Назад")) {
                             Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                             SendMessage request = new SendMessage(chatId, "Давай попробуем ещё раз! Выбери приют снова!")
                                     .replyMarkup(keyboard);
-                           telegramBot.execute(request);
+                            telegramBot.execute(request);
                         }
-                        if (update.message().text().equals("Кошки")) {
+                 if (update.message().text().equals("Кошки")) {
                             ReplyKeyboardMarkup keyboard = keyboardCreator("Как ухаживать за кошками",
                                                                                     "Основные правила ухода за кошками",
                                                                                     "Как до нас добраться",
@@ -83,24 +113,24 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                                                                                     "Что важно знать о котах вообще",
                                                                                     "Соединить с волонтером",
                                                                                     "Назад");
-                           SendMessage request = new SendMessage(chatId, "Хорошо, значит коты:)\nВот немного info о нашем кошачьем приюте, а также общие правила обращения с кошками")
+                            SendMessage request = new SendMessage(chatId, "Хорошо, значит коты:)\nВот немного info о нашем кошачьем приюте, а также общие правила обращения с кошками")
                                     .replyMarkup(keyboard);
-                           telegramBot.execute(request);
+                            telegramBot.execute(request);
                         }
-                        if (update.message().text().equals("Как до нас добраться")){
-                             SendMessage message = new SendMessage(chatId, answerServiceInterface.getAnswerById(1L).getTextMessage());
-                             telegramBot.execute(message);
+                 if (update.message().text().equals("Как до нас добраться")){
+                            SendMessage message = new SendMessage(chatId, answerServiceInterface.getAnswerById(1L).getTextMessage());
+                            telegramBot.execute(message);
                             Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                             SendMessage request = new SendMessage(chatId, "Выбери приют!")
                                     .replyMarkup(keyboard);
                             telegramBot.execute(request);
                         }
-                        if (update.message().text().equals("Соединить с волонтером")) {
+                 if (update.message().text().equals("Соединить с волонтером")) {
                             SendMessage request = new SendMessage(chatId, "Напишите свой номер телефона и мы с вами свяжемся");
                             telegramBot.execute(request);
                         }
 
-                        if (update.message().text().equals("Собаки")) {
+                 if (update.message().text().equals("Собаки")) {
                             ReplyKeyboardMarkup keyboard = keyboardCreator("Как ухаживать за собаками",
                                     "Основные правила ухода за собаками",
                                     "Как до нас добраться",
@@ -113,8 +143,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                             telegramBot.execute(request);
                         }
 
-
-                        if (update.message().text().matches("[0-9]+")){
+                 if (update.message().text().matches("[0-9]+")){
                             Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                             SendMessage request = new SendMessage(chatId, "Хорошо, Волонтер с Вами обязательно свяжется").replyMarkup(keyboard);
                             telegramBot.execute(request);
@@ -134,7 +163,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                             telegramBot.execute(messageToVolunteer);
                             }
 
-                        if (update.message().text().equals("wbv2022")){
+                 if (update.message().text().equals("wbv2022")){
                             Volunteer volunteer = new Volunteer();
                             volunteer.setChatId(update.message().chat().id());
                             volunteer.setName(update.message().chat().firstName());
@@ -146,13 +175,15 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                             SendMessage request = new SendMessage(chatId, "Поздравляю, теперь ты Волонтер!").replyMarkup(keyboard);
                             telegramBot.execute(request);
                         }
-                        if (doesVolunteerExist(chatId) && update.message().text().equals(START_CMD)){
+
+                 if (doesVolunteerExist(chatId) && update.message().text().equals(START_CMD)){
                             Keyboard keyboard = keyboardCreator("Подтвердить испытательный срок",
                                                                         "Изменить испытательный срок");
 
                             SendMessage message = new SendMessage(chatId, "Привет, волонтер!").replyMarkup(keyboard);
                             telegramBot.execute(message);
                         }
+
                     } catch (NullPointerException | NoSuchElementException ignored) {
                     }
                 }
@@ -172,6 +203,21 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         Volunteer volunteer = volunteerRepository.findByChatId(chatId);
         Long volunteerId = volunteer.getChatId();
         return volunteerId.equals(chatId);
+    }
+
+    public boolean doesUserExist (Long chatId){
+        User user = userRepository.findByChatId(chatId);
+        Long userId = user.getChatId();
+        return userId.equals(chatId);
+    }
+
+    @Scheduled (cron ="0 0 10 * * *" )
+    public void reportChecking (){
+    LocalDateTime lastReportDate = reportRepository.getLastReport(1).getDateTimeOfReport();
+    LocalDateTime actualDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+    if (lastReportDate.isBefore(actualDateTime)&&(lastReportDate.getDayOfMonth()-actualDateTime.getDayOfMonth())>2){
+
+    }
     }
 
 

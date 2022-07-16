@@ -2,8 +2,8 @@
 
 -- changeSet ikalmykov:1
     CREATE TABLE users (
-    id SERIAL NOT NULL primary key,
-    chat_id INTEGER NOT NULL ,
+    id SERIAL,
+    chat_id BIGINT,
     name TEXT,
     phone_number TEXT,
     is_owner BOOLEAN DEFAULT FALSE)
@@ -28,11 +28,12 @@
 
 -- changeSet ikalmykov:4
     CREATE TABLE reports(
-    id SERIAL NOT NULL PRIMARY KEY ,
-    chat_id INTEGER,
-    report_text TEXT NOT NULL,
-    phone_number INTEGER NOT NULL
-)
+    id SERIAL,
+    date_time_of_report DATE,
+    file_size INTEGER,
+    file_id TEXT,
+    text TEXT
+    )
 
 -- changeSet ikalmykov:5
     CREATE TABLE answers (
@@ -48,7 +49,6 @@
         media_type TEXT,
         pet_id INTEGER REFERENCES pets(id),
         answer_id INTEGER REFERENCES answers(id)
-
     )
 
 

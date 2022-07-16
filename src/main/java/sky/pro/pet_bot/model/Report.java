@@ -1,6 +1,7 @@
 package sky.pro.pet_bot.model;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -9,63 +10,85 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    private String reportText;
-    private Long chatId;
-
-    public Report(Integer id, String reportText, Long chatId) {
-        this.id = id;
-        this.reportText = reportText;
-        this.chatId = chatId;
-    }
+    LocalDateTime dateTimeOfReport;
+    Integer fileSize;
+    String fileId;
+    String text;
 
     public Report() {
     }
 
-    public Integer getId() {
+    public Report(Long id, LocalDateTime dateTimeOfReport, Integer fileSize, String fileId, String text) {
+        this.id = id;
+        this.dateTimeOfReport = dateTimeOfReport;
+        this.fileSize = fileSize;
+        this.fileId = fileId;
+        this.text = text;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getReportText() {
-        return reportText;
+    public LocalDateTime getDateTimeOfReport() {
+        return dateTimeOfReport;
     }
 
-    public void setReportText(String reportText) {
-        this.reportText = reportText;
+    public void setDateTimeOfReport(LocalDateTime dateTimeOfReport) {
+        this.dateTimeOfReport = dateTimeOfReport;
     }
 
-    public Long getChatId() {
-        return chatId;
+    public Integer getFileSize() {
+        return fileSize;
     }
 
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
+    public void setFileSize(Integer fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Report that = (Report) o;
-        return Objects.equals(id, that.id) && Objects.equals(reportText, that.reportText) && Objects.equals(chatId, that.chatId);
+        Report report = (Report) o;
+        return Objects.equals(id, report.id) && Objects.equals(dateTimeOfReport, report.dateTimeOfReport) && Objects.equals(fileSize, report.fileSize) && Objects.equals(fileId, report.fileId) && Objects.equals(text, report.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reportText, chatId);
+        return Objects.hash(id, dateTimeOfReport, fileSize, fileId, text);
     }
 
     @Override
     public String toString() {
         return "Report{" +
                 "id=" + id +
-                ", reportText='" + reportText + '\'' +
-                ", chatId=" + chatId +
+                ", dateTimeOfReport=" + dateTimeOfReport +
+                ", fileSize=" + fileSize +
+                ", fileId='" + fileId + '\'' +
+                ", text='" + text + '\'' +
                 '}';
     }
 }
