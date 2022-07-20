@@ -6,7 +6,8 @@
     chat_id BIGINT,
     name TEXT,
     phone_number TEXT,
-    is_owner BOOLEAN DEFAULT FALSE)
+    is_owner BOOLEAN DEFAULT FALSE,
+    probation_period INTEGER)
 
 
 -- changeSet ikalmykov:2
@@ -32,7 +33,8 @@
     date_time_of_report DATE,
     file_size INTEGER,
     file_id TEXT,
-    text TEXT
+    text TEXT,
+    chat_id BIGINT
     )
 
 -- changeSet ikalmykov:5

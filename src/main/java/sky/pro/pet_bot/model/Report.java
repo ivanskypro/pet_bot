@@ -16,16 +16,18 @@ public class Report {
     Integer fileSize;
     String fileId;
     String text;
+    Long chatId;
 
     public Report() {
     }
 
-    public Report(Long id, LocalDateTime dateTimeOfReport, Integer fileSize, String fileId, String text) {
+    public Report(Long id, LocalDateTime dateTimeOfReport, Integer fileSize, String fileId, String text, Long chatId) {
         this.id = id;
         this.dateTimeOfReport = dateTimeOfReport;
         this.fileSize = fileSize;
         this.fileId = fileId;
         this.text = text;
+        this.chatId = chatId;
     }
 
     public Long getId() {
@@ -68,17 +70,25 @@ public class Report {
         this.text = text;
     }
 
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Report report = (Report) o;
-        return Objects.equals(id, report.id) && Objects.equals(dateTimeOfReport, report.dateTimeOfReport) && Objects.equals(fileSize, report.fileSize) && Objects.equals(fileId, report.fileId) && Objects.equals(text, report.text);
+        return Objects.equals(id, report.id) && Objects.equals(dateTimeOfReport, report.dateTimeOfReport) && Objects.equals(fileSize, report.fileSize) && Objects.equals(fileId, report.fileId) && Objects.equals(text, report.text) && Objects.equals(chatId, report.chatId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dateTimeOfReport, fileSize, fileId, text);
+        return Objects.hash(id, dateTimeOfReport, fileSize, fileId, text, chatId);
     }
 
     @Override
@@ -89,6 +99,7 @@ public class Report {
                 ", fileSize=" + fileSize +
                 ", fileId='" + fileId + '\'' +
                 ", text='" + text + '\'' +
+                ", chatId=" + chatId +
                 '}';
     }
 }

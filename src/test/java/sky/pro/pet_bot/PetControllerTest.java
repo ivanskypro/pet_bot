@@ -20,7 +20,6 @@ import sky.pro.pet_bot.service.impl.VolunteerServiceInterfaceImpl;
 
 import java.util.Optional;
 
-import static sky.pro.pet_bot.model.Pet.PetType.CAT;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
