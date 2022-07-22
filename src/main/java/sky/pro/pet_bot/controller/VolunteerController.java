@@ -7,6 +7,12 @@ import sky.pro.pet_bot.service.impl.VolunteerServiceInterfaceImpl;
 
 import java.util.Collection;
 
+/**
+ * Контроллер для взаимодействия волонтерами, ведущими работы с владельцами животных.
+ * Позволяет менять волонтера, добавлять и удалять волонтеров.
+ * Исходя из целей Администратора
+ */
+
 @RestController
 @RequestMapping("/volunteers")
 public class VolunteerController {

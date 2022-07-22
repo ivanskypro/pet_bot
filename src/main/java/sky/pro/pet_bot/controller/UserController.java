@@ -9,6 +9,12 @@ import sky.pro.pet_bot.service.impl.UserServiceInterfaceImpl;
 
 import java.util.Collection;
 
+/**
+ * Контроллер для взаимодействия с владелелцем животного.
+ * Позволяет менять испытательный срок, имя, телефон и прочие данные
+ * исходя из целей Администратора
+ */
+
 @RestController
 @RequestMapping("/users")
 public class UserController {

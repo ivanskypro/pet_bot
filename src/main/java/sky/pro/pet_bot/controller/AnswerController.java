@@ -17,6 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
+/**
+ * Контроллер для взаимодействия с ответами, выдаваемыльми ботом пользователю и владельцу животного.
+ * Позволяет менять формулировку ответа, посылаемого ботом полбзователям бота.
+ */
+
 @RestController
 @RequestMapping("/answers")
 public class AnswerController {

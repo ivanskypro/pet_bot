@@ -17,6 +17,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
+/**
+ * Контроллер для взаимодействия животноыми.
+ * Позволяет менять данные о животном, добавлять/удалять животных, а также присваивать им фотографии.
+ * исходя из целей Администратора
+ */
+
 @RestController
 @RequestMapping("/pets")
 public class PetController {

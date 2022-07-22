@@ -73,7 +73,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             logger.info("Processing update: {}", update);
             try {
                 Long chatId = update.message().chat().id();
-
+/**
+ * Алгоритм сохранения отчётов в базу данных, прислыаемых Владельцами животных.
+ */
                  if ( update.message().photo() != null){
                          logger.info("Сохраняю отчет");
                          Report report = new Report();
@@ -95,12 +97,20 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                          telegramBot.execute(new SendMessage(volunteerRepository.findById(1L).get().getChatId(), "Владелец "+ update.message().chat().firstName() + " прислал отчёт с сообщением: " + report.getText()));
 
                      }
-                 if (update.message().text().equals(START_CMD)) {
+
+                /**
+                 * Алгоритм обработки начальной команды при запуске бота впервые или его перезагрузки.
+                 * Выдает пользователю клавиатуру.
+                 */
+                if (update.message().text().equals(START_CMD)) {
                             Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                             SendMessage request = new SendMessage(chatId, "Привет! Выбери один из приютов для получения info")
                                     .replyMarkup(keyboard);
                             telegramBot.execute(request);
                         }
+                /**
+                 * Кнопка назад на всех клавиатурах, позволяющая вернуться к первой клавиатуре.
+                 */
                  if (update.message().text().equals("Назад")) {
                             Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                             SendMessage request = new SendMessage(chatId, "Давай попробуем ещё раз! Выбери приют снова!")
@@ -120,8 +130,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     telegramBot.execute(request);
                 }
 
-
-                if (update.message().text().matches("[0-9]+")){
+                /**
+                 * Алгоритм обработки номера телефона пользователя для связи.
+                 * Сохраняет телефон и дублирует номер телефона в чат с волонтером для связи.
+                 */
+                    if (update.message().text().matches("[0-9]+")){
                     Keyboard keyboard = new ReplyKeyboardMarkup("Кошки", "Собаки");
                     SendMessage request = new SendMessage(chatId, "Хорошо, Волонтер с Вами обязательно свяжется").replyMarkup(keyboard);
                     telegramBot.execute(request);
@@ -229,6 +242,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     telegramBot.execute(message);
                 }
 
+                /**
+                 * Пароль при введении которого пользователь становится волонтером.
+                 * Данные о нем заносятся в базу данных.
+                 * После введения пароля, данные о волонтере заносятся в базу данных.
+                 * Взаимодействе с контроллером в таком случае не требуется.
+                 * */
 
                 if (update.message().text().equals("wbv2022")){
                     Volunteer volunteer = new Volunteer();
@@ -243,18 +262,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                             telegramBot.execute(request);
                         }
 
-                 if (update.message().text().equals("Изменить испытательный срок")){
-            }
-
-                 if (doesVolunteerExist(chatId) && update.message().text().equals(START_CMD)){
+                /**
+                 * Алгоритм приветствия волонтера, если сведения о нем уже есть в базе данных.
+                  */
+                           if (doesVolunteerExist(chatId) && update.message().text().equals(START_CMD)){
                             SendMessage message = new SendMessage(chatId, "Привет, волонтер!");
                             telegramBot.execute(message);
                         }
-
-                 if (update.message().text().equals("Продлить срок на 14 дней")){
-
-                 }
-
                     } catch (NullPointerException | NoSuchElementException ignored) {
                     }
                 }
@@ -262,7 +276,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    public ReplyKeyboardMarkup keyboardCreator (String ... buttons){
+    /**
+     * Метод создания клавиатуры, чтобы хоть как-то уменьшить и без того большой код.
+     * *
+     */
+        public ReplyKeyboardMarkup keyboardCreator (String ... buttons){
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(buttons[0]);
         for (int i = 1; i < buttons.length ; i++) {
             keyboard.addRow(buttons[i]);
@@ -270,11 +288,21 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return keyboard.oneTimeKeyboard(true);
     }
 
+    /**
+     *Метод проверки существования волонтера в базе данных.
+     */
     public boolean doesVolunteerExist(Long chatId){
         Volunteer volunteer = volunteerRepository.findByChatId(chatId);
         Long volunteerId = volunteer.getChatId();
         return volunteerId.equals(chatId);
     }
+
+    /**
+     * Метод проверки отчетов на актуальность.
+     * Если давность отчета составляет больще 2 ух дней, владелец получает уведомление
+     * о необходимости сдачи отчета.
+     * Проверяет базу данных каждый день в 10 часов утра.
+     */
 
     @Scheduled(cron ="0 0 10 * * *" )
     public void reportChecking (){
@@ -293,6 +321,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         telegramBot.execute(messageToVolunteer);
     }
     }
+
+    /**
+     * Метод проверки испытательного периода.
+     * По окончанию испытательного периода бот направляет уведомление в адрес волонтера
+     * о необходимости изменения испытательного срока.
+     */
 
     @Scheduled(cron ="0 0 9 * * *" )
     public void probationPeriodCounter (){
